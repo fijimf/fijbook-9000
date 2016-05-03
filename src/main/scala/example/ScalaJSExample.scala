@@ -21,12 +21,12 @@ object ScalaJSExample {
     val corners = Seq(Point(255, 255), Point(0, 255), Point(128, 0))
 
     def clear() = {
-      ctx.fillStyle = "black"
+      ctx.fillStyle = "white"
       ctx.fillRect(0, 0, 255, 255)
     }
 
     def run = for (i <- 0 until 10){
-      if (count % 3000 == 0) clear()
+      if (count % 4000 == 0) clear()
       count += 1
       p = (p + corners(Random.nextInt(3))) / 2
 
