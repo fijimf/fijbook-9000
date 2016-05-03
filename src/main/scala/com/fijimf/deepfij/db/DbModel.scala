@@ -113,5 +113,32 @@ class Offers(tag: Tag) extends Table[(Long, Long, Long, Boolean, Int, Int)](tag,
     foreignKey("GG_FK", gameId, TableQuery[Games])(_.id)
 }
 
+object DbModel {
+  val bets = TableQuery[Bets]
+  val games = TableQuery[Games]
+  val offers = TableQuery[Offers]
+  val results = TableQuery[Results]
+  val teams = TableQuery[Teams]
+  val users = TableQuery[Users]
+
+  val schema = users.schema ++ teams.schema ++ games.schema ++ results.schema ++ bets.schema ++ offers.schema
+
+  def showCreate() = schema.createStatements.foreach(println(_))
+
+  def showDrop() = schema.createStatements.foreach(println(_))
+
+  def create(db: Database) = {
+    db.run(DBIO.seq(schema.create))
+  }
+
+  def drop(db: Database) = {
+    db.run(DBIO.seq(schema.drop))
+  }
+
+  def main(args: Array[String]) {
+    showCreate()
+  }
+}
+
 
 
