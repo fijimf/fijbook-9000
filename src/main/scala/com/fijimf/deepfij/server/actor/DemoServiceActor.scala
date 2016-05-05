@@ -30,6 +30,24 @@ class DemoServiceActor extends Actor with DemoService {
   def receive = runRoute(demoRoute)
 }
 
+class ScrapingServiceActor extends Actor with ScrapingService {
+
+  def actorRefFactory = context
+
+  def receive = runRoute(route)
+}
+
+trait ScrapingService extends HttpService {
+  implicit def executionContext = actorRefFactory.dispatcher
+
+  val route = {
+    get {
+      path("deepfij") {
+        complete("Hello world")
+      }
+    }
+  }
+}
 
 // this trait defines our service behavior independently from the service actor
 trait DemoService extends HttpService {

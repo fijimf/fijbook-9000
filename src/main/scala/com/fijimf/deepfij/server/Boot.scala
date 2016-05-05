@@ -3,7 +3,7 @@ package com.fijimf.deepfij.server
 
   import akka.actor.{Props, ActorSystem}
   import akka.io.IO
-import com.fijimf.deepfij.server.actor.DemoServiceActor
+import com.fijimf.deepfij.server.actor.{ScrapingServiceActor, DemoServiceActor}
 import spray.can.Http
   import akka.pattern.ask
   import akka.util.Timeout
@@ -13,7 +13,7 @@ import spray.can.Http
 
     // create our actor system with the name smartjava
     implicit val system = ActorSystem("on-spray-can")
-    val service = system.actorOf(Props[DemoServiceActor], "sj-rest-service")
+    val service = system.actorOf(Props[ScrapingServiceActor], "sj-rest-service")
 
     // IO requires an implicit ActorSystem, and ? requires an implicit timeout
     // Bind HTTP to the specified service.
