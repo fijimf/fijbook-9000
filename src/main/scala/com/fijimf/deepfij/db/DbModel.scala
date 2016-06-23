@@ -4,8 +4,10 @@ import java.time.{LocalDateTime, ZoneOffset}
 
 import slick.driver.{H2Driver, JdbcDriver}
 import slick.jdbc.JdbcBackend
-import slick.lifted.ForeignKeyQuery
+import slick.lifted.{Query, ForeignKeyQuery}
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 import scala.slick.driver
 
 class DbModel(val driver: JdbcDriver) {
@@ -145,22 +147,32 @@ class DbModel(val driver: JdbcDriver) {
     def drop(db: Database) = {
       db.run(DBIO.seq(schema.drop))
     }
+
+    /* How to do this   .   .   . */
+    def insertTeams(db: Database,ts: Seq[(Long, String, String)]): Future[Option[Int]] = {
+      db.run(teams map (t => (t.id, t.name, t.logoUrl)) ++= ts)
+    }
+
   }
 
 }
 
-/*
 
 object Main {
   def main(args: Array[String]) {
     print("Hello")
     val dbModel: DbModel = new DbModel(H2Driver)
-    dbModel.DAO.showCreate()
-    dbModel.DAO.create(JdbcBackend.Database.forURL("jdbc:h2:mem:test1", driver = "org.h2.Driver"))
+    import dbModel.DAO._
+    showCreate()
+    val db: JdbcBackend.DatabaseDef = JdbcBackend.Database.forURL("jdbc:h2:mem:test1", driver = "org.h2.Driver")
+    create(db)
+
+    val eventualMaybeInt: Future[Option[Int]] = insertTeams(db, List((0L,"GU","www")))
+          val result: Option[Int] = Await.result(eventualMaybeInt, Duration.Inf)
+    print(result)
   }
 }
 
-*/
 
 
 

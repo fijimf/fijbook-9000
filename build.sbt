@@ -26,7 +26,8 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %%% "scalatags" % "0.5.4",
   "com.typesafe.slick" %% "slick" % "3.0.0",
   "org.slf4j" % "slf4j-nop" % "1.6.4",
-  "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1"
+  "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1",
+  "com.h2database" % "h2" % "1.4.192"
 )
 
 bootSnippet := "com.fijimf.deepfij.ui.BookUI.main(document.getElementById('deepfij-main'));"
