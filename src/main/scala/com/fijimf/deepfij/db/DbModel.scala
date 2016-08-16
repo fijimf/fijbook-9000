@@ -2,13 +2,15 @@ package com.fijimf.deepfij.db
 
 import java.time.{LocalDateTime, ZoneOffset}
 
+import slick.dbio.DBIO
+import slick.dbio.Effect.Write
 import slick.driver.{H2Driver, JdbcDriver}
 import slick.jdbc.JdbcBackend
 import slick.lifted.{Query, ForeignKeyQuery}
+import slick.profile.FixedSqlAction
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
-import scala.slick.driver
 
 class DbModel(val driver: JdbcDriver) {
 
@@ -127,6 +129,7 @@ class DbModel(val driver: JdbcDriver) {
 
 
   object DAO {
+    import slick.dbio.DBIO
     val bets = TableQuery[Bets]
     val games = TableQuery[Games]
     val offers = TableQuery[Offers]
@@ -141,6 +144,8 @@ class DbModel(val driver: JdbcDriver) {
     def showDrop() = schema.createStatements.foreach(println(_))
 
     def create(db: Database) = {
+
+
       db.run(DBIO.seq(schema.create))
     }
 
@@ -150,7 +155,8 @@ class DbModel(val driver: JdbcDriver) {
 
     /* How to do this   .   .   . */
     def insertTeams(db: Database,ts: Seq[(Long, String, String)]): Future[Option[Int]] = {
-      db.run(teams map (t => (t.id, t.name, t.logoUrl)) ++= ts)
+      val action: FixedSqlAction[Option[Int], NoStream, Write] = teams map (t => (t.id, t.name, t.logoUrl)) ++= ts
+      db.run(action)
     }
 
   }
@@ -160,11 +166,12 @@ class DbModel(val driver: JdbcDriver) {
 
 object Main {
   def main(args: Array[String]) {
+    import H2Driver.api._
     print("Hello")
     val dbModel: DbModel = new DbModel(H2Driver)
     import dbModel.DAO._
     showCreate()
-    val db: JdbcBackend.DatabaseDef = JdbcBackend.Database.forURL("jdbc:h2:mem:test1", driver = "org.h2.Driver")
+    val db: JdbcBackend.DatabaseDef = JdbcBackend.Database.forURL("jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
     create(db)
 
     val eventualMaybeInt: Future[Option[Int]] = insertTeams(db, List((0L,"GU","www")))
